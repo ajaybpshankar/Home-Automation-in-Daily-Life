@@ -1,0 +1,50 @@
+import RPi.GPIO  as  GPIO
+import time 
+import serial
+from ubidots import ApiClient
+
+GPIO.setmode(GPIO.BOARD)
+GPIO.setwarnings(False)
+ser=serial.Serial('/dev/ttyS0',9600,timeout=1)
+led=5
+buz=3
+
+GPIO.setup(led,GPIO.OUT)
+GPIO.setup(buz,GPIO.OUT)
+h=raw_input("enter  your name")
+g=raw_input("enter the secret code")
+def gsm_send():
+        ser.write('AT\r')
+        time.sleep(1)
+        ser.write('AT+CMGF=1\r')
+        time.sleep(1)
+        ser.write('AT+CMGS="8861076558"\r')
+        time.sleep(1)
+        ser.write(h)
+        ser.write('\r')
+        
+        time.sleep(0.5)
+	set.write(g)
+	set.write('\r')
+        ser.write('\x1A')
+	time.sleep(0.5)
+
+gsm_send()
+print("your request has been sent")
+print("\t\t\t\t......please wait.....")
+time.sleep(10)
+api=ApiClient(token="A1E-DSQgdYDna6KHvmU2F1oFOSWG7z3OcX")
+variable=api.get_variable("5d3ec684c03f9733a367047e")
+
+a=variable.get_values(1)
+if a[0]['value']:
+	GPIO.output(led,1)
+	print("door is opened  :) ")
+
+else:
+        GPIO.output(led,0)
+	GPIO.output(buz,1)
+	print("owner denied your request  :(  ")
+
+
+
